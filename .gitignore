@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project exclude paths
+/src/components/Anchor.js
+/src/components/Bird.js
+/src/components/Bonus.js
+/src/components/Fish.js
+/src/components/Heart.js
+/src/components/Jellyfish.js
+/src/components/SeaUrchin.js
+/src/components/Torpedos.js
+/src/components/WhaleShark.js
+/src/App.js
+/src/Game.js
+/src/main.js
+/src/Playground.js
+/src/SDMANAGER.js

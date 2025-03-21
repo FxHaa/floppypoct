@@ -1,0 +1,284 @@
+import React, { useState, useEffect, useRef } from "react";
+import Bird from "./components/Bird";
+import Pipes from "./components/Pipes";
+import Torpedo from "./components/Torpedo";
+import Bonus from "./components/Bonus"; // New Bonus component
+import "./styles.css";
+
+const SDMANAGER = () => {
+  const [birdPosition, setBirdPosition] = useState({ x: 50, y: 200 });
+  const [velocity, setVelocity] = useState(0); // Bird's vertical velocity
+  const [pipes, setPipes] = useState([]); // Array of pipes
+  const [torpedoes, setTorpedoes] = useState([]); // Array of torpedoes
+  const [bonuses, setBonuses] = useState([]); // Array of bonus elements
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [speedBoostActive, setSpeedBoostActive] = useState(false); // Track bonus effect
+  const [keysPressed, setKeysPressed] = useState({}); // Track keys pressed
+
+  const gravity = 0.5; // Gravity acceleration
+  const jumpStrength = -10; // Initial velocity on jump
+  const terminalVelocity = 10; // Maximum downward velocity
+  const pipeWidth = 100;
+  const pipeGap = 100; // Space between top and bottom pipes
+  const torpedoWidth = 60; // Torpedo size
+  const torpedoHeight = 20;
+  const bonusSize = 30; // Bonus element size
+  const birdSpeed = 5; // Speed for horizontal movement
+
+  const gameStartedRef = useRef(gameStarted);
+  const gameOverRef = useRef(gameOver);
+  const passedPipesRef = useRef(new Set()); // Track passed pipes by their `id`
+  const passedTorpedoesRef = useRef(new Set()); // Track passed torpedoes by their `id`
+
+  const jump = () => {
+    if (!gameOver && gameStarted) {
+      setVelocity(jumpStrength); // Apply upward velocity
+    } else if (!gameOver && !gameStarted) {
+      // Start the game on the first jump
+      setGameStarted(true);
+      setVelocity(jumpStrength); // Initial jump to start motion
+    } else {
+      // Restart the game
+      setBirdPosition({ x: 50, y: 200 });
+      setPipes([]);
+      setTorpedoes([]);
+      setBonuses([]);
+      setGameOver(false);
+      setGameStarted(true);
+      setScore(0);
+      setVelocity(0); // Reset velocity
+      passedPipesRef.current.clear(); // Reset passed pipes tracking
+      passedTorpedoesRef.current.clear(); // Reset passed torpedoes tracking
+      setSpeedBoostActive(false); // Reset speed boost
+    }
+  };
+
+  const checkCollision = () => {
+    const birdTop = birdPosition.y + 10; // Adjusted hitbox
+    const birdBottom = birdPosition.y + 40; // Adjusted hitbox
+    const birdLeft = birdPosition.x + 10; // Adjusted hitbox
+    const birdRight = birdPosition.x + 40; // Adjusted hitbox
+
+    // Check for collision with pipes
+    pipes.forEach((pipe) => {
+      const pipeTop = pipe.y;
+      const pipeBottom = pipe.y + pipeGap;
+      const pipeLeft = pipe.x;
+      const pipeRight = pipe.x + pipeWidth;
+
+      const isColliding =
+        (birdRight > pipeLeft &&
+          birdLeft < pipeRight &&
+          birdBottom > pipeTop &&
+          birdTop < pipeBottom) || // Pipe collision
+        birdTop < 0 || // Top boundary collision
+        birdBottom > 800; // Bottom boundary collision
+
+      if (isColliding) {
+        setGameOver(true);
+        setGameStarted(false);
+      }
+
+      // Increment score for passed pipes
+      if (!passedPipesRef.current.has(pipe.id) && birdRight > pipeRight) {
+        passedPipesRef.current.add(pipe.id);
+        setScore((prev) => prev + 1);
+      }
+    });
+
+    // Check for collision with torpedoes
+    torpedoes.forEach((torpedo) => {
+      const torpedoLeft = torpedo.x;
+      const torpedoRight = torpedo.x + torpedoWidth;
+      const torpedoTop = torpedo.y;
+      const torpedoBottom = torpedo.y + torpedoHeight;
+
+      const isColliding =
+        birdRight > torpedoLeft &&
+        birdLeft < torpedoRight &&
+        birdBottom > torpedoTop &&
+        birdTop < torpedoBottom;
+
+      if (isColliding) {
+        setGameOver(true);
+        setGameStarted(false);
+      }
+
+      // Increment score for passed torpedoes
+      if (!passedTorpedoesRef.current.has(torpedo.id) && birdRight > torpedoRight) {
+        passedTorpedoesRef.current.add(torpedo.id);
+        setScore((prev) => prev + 1);
+      }
+    });
+
+    // Check for collision with bonuses
+    bonuses.forEach((bonus) => {
+      const bonusLeft = bonus.x;
+      const bonusRight = bonus.x + bonusSize;
+      const bonusTop = bonus.y;
+      const bonusBottom = bonus.y + bonusSize;
+
+      const isColliding =
+        birdRight > bonusLeft &&
+        birdLeft < bonusRight &&
+        birdBottom > bonusTop &&
+        birdTop < bonusBottom;
+
+      if (isColliding) {
+        activateSpeedBoost();
+        setBonuses((prevBonuses) =>
+          prevBonuses.filter((b) => b.id !== bonus.id) // Remove collected bonus
+        );
+      }
+    });
+  };
+
+  const activateSpeedBoost = () => {
+    setSpeedBoostActive(true);
+    setTimeout(() => {
+      setSpeedBoostActive(false);
+    }, 20000); // Effect lasts for 20 seconds
+  };
+
+  useEffect(() => {
+    gameStartedRef.current = gameStarted;
+    gameOverRef.current = gameOver;
+  }, [gameStarted, gameOver]);
+
+  useEffect(() => {
+    if (!gameOver) {
+      checkCollision();
+    }
+  }, [birdPosition, pipes, torpedoes, bonuses]);
+
+  useEffect(() => {
+    const gameLoop = setInterval(() => {
+      if (!gameOverRef.current && gameStartedRef.current) {
+        // Apply gravity and update bird position
+        setVelocity((prevVelocity) =>
+          Math.min(prevVelocity + gravity, terminalVelocity)
+        );
+
+        setBirdPosition((prev) => ({
+          ...prev,
+          y: Math.max(prev.y + velocity, 0), // Prevent bird from going off top
+        }));
+
+        // Horizontal movement based on key press
+        if (keysPressed.a) {
+          setBirdPosition((prev) => ({
+            ...prev,
+            x: Math.max(prev.x - birdSpeed, 0), // Prevent going off-screen to the left
+          }));
+        }
+        if (keysPressed.d) {
+          setBirdPosition((prev) => ({
+            ...prev,
+            x: Math.min(prev.x + birdSpeed, 800 - 50), // Prevent going off-screen to the right
+          }));
+        }
+
+        // Move pipes and remove off-screen pipes
+        setPipes((prevPipes) =>
+          prevPipes
+            .map((pipe) => ({
+              ...pipe,
+              x: pipe.x - (speedBoostActive ? 2 : 5), // Slower during speed boost
+            }))
+            .filter((pipe) => pipe.x + pipeWidth > 0) // Remove off-screen pipes
+        );
+
+        // Move torpedoes and remove off-screen torpedoes
+        setTorpedoes((prevTorpedoes) =>
+          prevTorpedoes
+            .map((torpedo) => ({
+              ...torpedo,
+              x: torpedo.x - (speedBoostActive ? 5 : 10), // Slower during speed boost
+            }))
+            .filter((torpedo) => torpedo.x + torpedoWidth > 0) // Remove off-screen torpedoes
+        );
+      }
+    }, 30);
+
+    return () => {
+      clearInterval(gameLoop);
+    };
+  }, [velocity, keysPressed, speedBoostActive]);
+
+  // Listen for keydown and keyup events
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key.toLowerCase()]: true }));
+    };
+    const handleKeyUp = (event) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key.toLowerCase()]: false }));
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  return (
+    <div className={`App ${gameOver ? "game-over" : ""}`} onClick={jump}>
+      <Bird birdPosition={birdPosition} />
+      {pipes.map((pipe) => (
+        <Pipes
+          key={pipe.id}
+          pipePosition={pipe}
+          pipeWidth={pipeWidth}
+          pipeGap={pipeGap}
+        />
+      ))}
+      {torpedoes.map((torpedo) => (
+        <Torpedo key={torpedo.id} torpedoPosition={torpedo} />
+      ))}
+      {bonuses.map((bonus) => (
+        <Bonus key={bonus.id} bonusPosition={bonus} />
+      ))}
+      {!gameOver && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 10,
+            right: 10,
+            fontSize: "24px",
+            color: "white",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            padding: "5px 10px",
+            borderRadius: "5px",
+          }}
+        >
+          Score: {score}
+        </div>
+      )}
+      {gameOver && (
+        <center>
+          <div className="game-over-message">
+            Game Over!
+            <br />
+            <p
+              style={{
+                backgroundColor: "blue",
+                padding: "2px 6px",
+                borderRadius: "5px",
+              }}
+            >
+              Final Score: {score}
+              <br />
+              Click anywhere to Restart
+            </p>
+          </div>
+        </center>
+      )}
+    </div>
+  );
+};
+
+export default SDMANAGER;
