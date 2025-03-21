@@ -35,7 +35,6 @@ body {
   width: 70px;
   height: 70px;
   user-select: none;
-  border: 2px solid blue;
   zIndex: 10;
 }
 
@@ -53,8 +52,8 @@ body {
 
 .turtle {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
 }
 
 .whaleshark {
@@ -63,8 +62,24 @@ body {
   height: 200px;
 }
 
-.border-box {
-  border: red 1px solid;
+.anchor {
+  width: 30px;
+  height: 60px;
+}
+
+.bonus {
+  width: 60px;
+  height: 60px;
+}
+
+.jellyfish {
+  width: 50px;
+  height: 60px;
+}
+
+.seaurchin {
+  width: 60px;
+  height: 60px;
 }
 
 .ground {

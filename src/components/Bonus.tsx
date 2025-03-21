@@ -7,7 +7,7 @@ const Bonus = ({ bonusPosition }) => {
       <img
           src={treasure}
           alt="bird"
-          className="bird border-box"
+          className="bird"
           style={{
             left: bonusPosition.x,
             top: bonusPosition.y,

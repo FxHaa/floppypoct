@@ -11,11 +11,16 @@ import SeaUrchin from "./components/SeaUrchin";
 import Anchor from "./components/Anchor";
 
 const SDMANAGER = () => {
+  const [showStoryModal, setShowStoryModal] = useState(true); // Modal sichtbar beim Start
+  const [showStartScreen, setShowStartScreen] = useState(true); // New state for start screen
+
+  const startGame = () => {
+    setShowStoryModal(false); // Hide the modal
+    setShowStartScreen(true); // Show the start screen
+  };
 
   const INIT_JELLYFISHSPEED = 2;
   const INIT_FISHSPEED = 4;
-  const JELLYFISH_DELAY = 0;
-  const JELLYFISH_FREQUENCY = 10000;
   const JELLYFISH_TRACK = 0.002
   const NUM_BONUSES = 3;
   const BONUS_FREQUENCY = 30000; //30000
@@ -52,14 +57,18 @@ const SDMANAGER = () => {
   const gravity = 0.5; // Gravity acceleration
   const jumpStrength = -10; // Initial velocity on jump
   const terminalVelocity = 10; // Maximum downward velocity
-  const fishWidth = 100;
-  const fishGap = 100; // Space between top and bottom fishes
+  const fishWidth = 60;
+  const fishGap = 60; // Space between top and bottom fishes
   const torpedoWidth = 60; // Torpedo size
-  const torpedoHeight = 20;
+  const torpedoHeight = 60;
   const whaleSharkWidth = 200; // whaleshark size
   const whaleSharkHeight = 200;
-  const jellyFishWidth = 200; // jellyFish size
-  const jellyFishHeight = 200;
+  const jellyFishWidth = 50; // jellyFish size
+  const jellyFishHeight = 60;
+  const anchorHeight = 60;
+  const anchorWidth = 30;
+  const SeaUrchinWidth = 60;
+  const SeaUrchinHeight = 60;
   const spawnX = 2000;
 
   const gameStartedRef = useRef(gameStarted);
@@ -70,17 +79,17 @@ const SDMANAGER = () => {
   const passedWhaleSharksRef = useRef(new Set()); // Track passed whaleshark by their `id`
   const passedJellyFishesRef = useRef(new Set()); // Track passed jellyFish by their `id`
 
-  const bonusWidth = 30; // Größe des Bonus
-  const bonusHeight = 30;
+  const bonusWidth = 60; // Größe des Bonus
+  const bonusHeight = 60;
   const bonusDuration = 15000; // Effekt-Dauer (20 Sekunden)
 
   const levelConfigs = [
     {
       level: 1,
       mobTypes: ["Fish"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+      jellyfishConfig: { frequency: 500, speed: 2 },
+      seaUrchinConfig: { frequency: 500, speed: 5, verticalRange: 2 }, // Sea Urchin put the im Level
+      anchorConfig: { frequency: 500, acceleration: 0.3, initialSpeed: 2 }, //
     },
     {
       level: 2,
@@ -191,7 +200,7 @@ const SDMANAGER = () => {
         // Zeige kurz den Levelwechsel an
         setShowLevelIndicator(true);
         setTimeout(() => setShowLevelIndicator(false), 3000); // Hinweis für 3 Sekunden
-      }, 60000); // Alle 60 Sekunden
+      }, 45000); // Alle 60 Sekunden
     }
 
     return () => clearInterval(levelTimer); // Timer bereinigen
@@ -232,6 +241,7 @@ const SDMANAGER = () => {
     const birdBottom = birdPosition.y + 70; // Adjusted hitbox
     const birdLeft = birdPosition.x; // Adjusted hitbox
     const birdRight = birdPosition.x + 70; // Adjusted hitbox
+    const groundLevel = 600;
 
     // Check for collision with bonus
     bonuses.forEach((bonus) => {
@@ -305,11 +315,17 @@ const SDMANAGER = () => {
       }
     };
 
+    if (birdBottom >= groundLevel) {
+      handleCollision(); // Leben reduzieren
+      setBirdPosition((prev) => ({ ...prev, y: groundLevel - 70 })); // Vogel auf Boden zurücksetzen (visueller Effekt)
+      return;
+    }
+
     seaUrchins.forEach((seaUrchin) => {
       const seaUrchinLeft = seaUrchin.x;
-      const seaUrchinRight = seaUrchin.x + 50; // Breite anpassen
+      const seaUrchinRight = seaUrchin.x + SeaUrchinWidth; // Breite anpassen
       const seaUrchinTop = seaUrchin.y;
-      const seaUrchinBottom = seaUrchin.y + 50; // Höhe anpassen
+      const seaUrchinBottom = seaUrchin.y + SeaUrchinHeight; // Höhe anpassen
 
       const isColliding =
           birdRight > seaUrchinLeft &&
@@ -404,9 +420,9 @@ const SDMANAGER = () => {
 
     anchors.forEach((anchor) => {
       const anchorLeft = anchor.x;
-      const anchorRight = anchor.x + 40; // Breite des Anchors
+      const anchorRight = anchor.x + anchorWidth; // Breite des Anchors
       const anchorTop = anchor.y;
-      const anchorBottom = anchor.y + 40; // Höhe des Anchors
+      const anchorBottom = anchor.y + anchorHeight; // Höhe des Anchors
 
       const isColliding =
           birdRight > anchorLeft &&
@@ -741,6 +757,72 @@ const SDMANAGER = () => {
   return (
       <div className={`App ${gameOver ? "game-over" : ""}`} onClick={jump}>
         <Bird birdPosition={birdPosition} isVisible={isVisible}/>
+        {showStoryModal && (
+            <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Hintergrund abdunkeln
+                  zIndex: 1100, // Sicherstellen, dass es oberhalb angezeigt wird
+                }}
+            >
+              <div
+                  style={{
+                    backgroundColor: "lightblue",
+                    padding: "30px",
+                    borderRadius: "10px",
+                    width: "100%",
+                    height: "80%",
+                    maxWidth: "800px",
+                    textAlign: "center",
+                    boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.5)",
+                    fontSize: "14px", // Schriftgröße reduziert
+                    lineHeight: "1.4", // Absatzzeilenhöhe anpassen
+                    zIndex: 1200,
+                  }}
+              >
+                <h2 style={{ marginBottom: "20px", fontWeight: "bold" }}>
+                  Octos Tiefsee-Abendteuer oder bevor der kleine blaue (P)Octopus zu IMP kam
+                </h2>
+                <p>
+                  Tief unten im Ozean lebt Octo, ein kleiner blauer Oktopus, der sehr neugierig und abenteuerlustig ist. Eines Tages wird es ihm bei seiner Oktopus-Familie zu langweilig und so macht er sich auf den Weg die Unterwasserwelt zu erkunden 🌊.
+                  Doch die Reise wird schnell riskant! Gefährliche Fische 🐡, giftige Quallen 🪼und anderes Meeresgetier stellen sich ihm in den Weg, aber es gibt auch menschengemachte Tücken zu umgehen. Er muss sich flink bewegen und Hindernissen ausweichen, um voranzukommen.
+                  Auf seinem Abenteuer kann Octo spezielle Schätze sammeln, die ihm zusätzlich Kräfte verleihen – wie unsichtbar werden, ein zusätzliches Leben gewinnen oder an Feinden vorbeischleichen.
+                  Hilf´ dem kleinen Octo, die Gefahren zu überwinden. Die Reise beginnt jetzt!
+                  Wer sammelt die meisten Punkte?
+                </p>
+                <button
+                    onClick={startGame} // Verbindet das Schließen des Modals und Start des Spiels
+                    style={{
+                      marginTop: "20px",
+                      padding: "10px 20px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      borderRadius: "5px",
+                      backgroundColor: "#1E90FF",
+                      color: "white",
+                      border: "none",
+                      cursor: "pointer",
+                      transition: "0.3s",
+                    }}
+                    onMouseOver={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#4682B4")
+                    }
+                    onMouseOut={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#1E90FF")
+                    }
+                >
+                  Ich bin bereit!
+                </button>
+              </div>
+            </div>
+        )}
         {fishes.map((fish) => (
             <Fish
                 key={fish.id}
@@ -791,16 +873,57 @@ const SDMANAGER = () => {
             <div
                 style={{
                   position: "absolute",
-                  top: 10, // Platzierung nach oben
-                  left: 10, // Platzierung nach links
-                  fontSize: "16px",
-                  padding: "5px 10px",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  color: "white",
-                  borderRadius: "5px",
+                  top: 10, // Abstand zum oberen Rand
+                  right: 20, // Abstand zum rechten Rand
+                  display: "flex", // Flexbox für horizontale Ausrichtung
+                  flexDirection: "row", // Elemente horizontal anordnen
+                  alignItems: "center", // Vertikale Zentrierung der Kinder
+                  gap: "20px", // Abstand zwischen Herzen und Level/Score-Feld
+                  zIndex: 1000, // Über anderen Elementen
                 }}
             >
-              Level: {level}
+              {/* Herzen-Anzeigeblock */}
+              <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row", // Elemente horizontal anordnen
+                    alignItems: "center", // Vertikale Zentrierung
+                    gap: "8px", // Mehr Abstand zwischen den Herzen
+                    height: "100%",
+                  }}
+              >
+                {lives > 0 &&
+                    [...Array(lives)].map((_, index) => (
+                        <Heart key={index} />
+                    ))}
+              </div>
+
+              {/* Auffälliger Level/Score-Anzeigeblock */}
+              <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row", // Level und Score horizontal
+                    alignItems: "center", // Vertikale Zentrierung
+                    gap: "20px", // Abstand zwischen Level und Score
+                    backgroundColor: "rgba(0, 0, 0, 0.7)", // Stärker abgedunkelter, transparenter Hintergrund
+                    padding: "15px 20px", // Mehr Innenabstand für bessere Sichtbarkeit
+                    borderRadius: "12px", // Größere, weichere Rundungen
+                    color: "white", // Klare, helle Schriftfarbe
+                    fontSize: "18px", // Größere Schrift für mehr Präsenz
+                    fontWeight: "bold", // Fettere Schrift für klare Lesbarkeit
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)", // Schatten für 3D-Effekt
+                    border: "2px solid rgba(255, 255, 255, 0.8)", // Dezenter weißer Rahmen
+                  }}
+              >
+                {/* Level-Anzeige */}
+                <div style={{}}>
+                  <strong>Level:</strong> {level}
+                </div>
+                {/* Score-Anzeige */}
+                <div style={{}}>
+                  <strong>Score:</strong> {score}
+                </div>
+              </div>
             </div>
         )}
 
@@ -862,43 +985,8 @@ const SDMANAGER = () => {
               Invicible Mode Active!
             </div>
         )}
-        {!gameOver && (
-            <div
-                style={{
-                  position: "absolute",
-                  top: 20,
-                  right: 20,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  zIndex: 1000
-                }}
-            >
-              <div
-                  style={{
-                    marginRight: '20px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-              >
-                {lives > 0 && [...Array(lives)].map((_, index) => (
-                    <Heart key={index} />
-                ))}
-              </div>
-              <div
-                  style={{
-                    fontSize: "14px",
-                    color: "white",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    padding: "5px 10px",
-                    borderRadius: "5px",
-                  }}
-              >
-                Score: {score}
-              </div>
-            </div>
-        )}
-        {!gameStarted && !gameOver &&(
+        {/* Start Screen Rendering */}
+        {!gameOver && showStartScreen && !showStoryModal && !gameStarted && (
             <div
                 style={{
                   position: "absolute",
@@ -909,13 +997,15 @@ const SDMANAGER = () => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  background: "linear-gradient(120deg, #87CEFA, #4682B4, #1E90FF)", // Blautöne
-                  backgroundSize: "300% 300%", // Für sanfte Gradient-Animation
-                  animation: "gradientMoveBlue 8s ease infinite", // Animierter Gradient
-                  color: "white",
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  zIndex: 1000,
+                  background: "linear-gradient(120deg, #87CEFA, #4682B4, #1E90FF)", // Animated background
+                  backgroundSize: "300% 300%",
+                  animation: "gradientMoveBlue 8s ease infinite",
+                  zIndex: 2000,
+                }}
+                onClick={() => {
+                  setShowStartScreen(false); // Hide the start screen
+                  setGameStarted(true); // Start the game
+                  console.log("CLICKED")
                 }}
             >
               <div
@@ -923,15 +1013,15 @@ const SDMANAGER = () => {
                     textAlign: "center",
                     padding: "20px",
                     borderRadius: "15px",
-                    backgroundColor: "rgba(0, 0, 64, 0.7)", // Halbtransparenter dunklerer Blauton für den Hintergrund des Textes
-                    boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)", // Leichter Schatteneffekt
-                    backdropFilter: "blur(10px)", // Weichzeichnereffekt
+                    backgroundColor: "rgba(0, 0, 64, 0.7)",
+                    boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)",
+                    backdropFilter: "blur(10px)",
                     color: "white",
                   }}
               >
                 <div
                     style={{
-                      animation: "pulseBlue 1.5s infinite", // Animation für Text
+                      animation: "pulseBlue 1.5s infinite",
                     }}
                 >
                   <p style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "20px" }}>
