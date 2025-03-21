@@ -11,20 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Repository auschecken (mit fetch-depth für saubere Geschichte)
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node
+      # Setup Node.js-Umgebung
+      - name: Setup Node.js
         uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Stellen Sie sicher, dass eine unterstützte Version verwendet wird
 
+      # Installieren von Abhängigkeiten
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
 
+      # Projekt bauen
       - name: Build project
         run: npm run build
 
+      # Sicherstellen, dass der Build-Ausgabepfad existiert
+      - name: Verify Build Output
+        run: ls -la ./dist
+
+      # Produktionsfertige Build-Dateien hochladen
       - name: Upload production-ready build files
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3
         with:
           name: production-files
           path: ./dist
@@ -36,12 +49,18 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      # Artefakt herunterladen
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: production-files
           path: ./dist
 
+      # Debugging Schritt: Überprüfen, ob die heruntergeladenen Dateien existieren
+      - name: Verify downloaded files
+        run: ls -la ./dist
+
+      # Deployment auf GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
