@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      # Repository auschecken (mit fetch-depth für saubere Geschichte)
+      # Repository auschecken
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Stellen Sie sicher, dass eine unterstützte Version verwendet wird
+          node-version: '16'
 
       # Installieren von Abhängigkeiten
       - name: Install dependencies
@@ -31,13 +31,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # Sicherstellen, dass der Build-Ausgabepfad existiert
+      # Sicherstellen, dass der Build-Ordner korrekt generiert wurde
       - name: Verify Build Output
         run: ls -la ./dist
 
       # Produktionsfertige Build-Dateien hochladen
       - name: Upload production-ready build files
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3
         with:
           name: production-files
           path: ./dist
@@ -45,18 +45,18 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main'
 
     steps:
       # Artefakt herunterladen
       - name: Download artifact
-        uses: actions/download-artifact@v3.1.1
+        uses: actions/download-artifact@v3
         with:
           name: production-files
           path: ./dist
 
-      # Debugging Schritt: Überprüfen, ob die heruntergeladenen Dateien existieren
+      # Sicherstellen, dass heruntergeladene Dateien existieren
       - name: Verify downloaded files
         run: ls -la ./dist
 
