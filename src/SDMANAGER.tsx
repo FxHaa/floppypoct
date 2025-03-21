@@ -77,20 +77,73 @@ const SDMANAGER = () => {
   const levelConfigs = [
     {
       level: 1,
-      mobTypes: ["Fish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin", "Anchor"],
+      mobTypes: ["Fish"],
       jellyfishConfig: { frequency: 15000, speed: 2 },
       seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
       anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
     },
     {
       level: 2,
-      mobTypes: ["Fish"],
-      jellyfishConfig: { frequency: 12000, speed: 3 }, // Quallenmaschine etwas schneller
+      mobTypes: ["Fish", "Torpedo"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
     },
     {
       level: 3,
-      mobTypes: ["Fish", "Jellyfish"],
-      jellyfishConfig: { frequency: 8000, speed: 4 }, // Häufigere Quallen
+      mobTypes: ["Fish", "Torpedo", "WhaleShark"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 4,
+      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 5,
+      mobTypes: ["Anchor"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 2000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 6,
+      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 7,
+      mobTypes: ["Jellyfish"],
+      jellyfishConfig: { frequency: 2000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 8,
+      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 9,
+      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
+    },
+    {
+      level: 10,
+      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
+      jellyfishConfig: { frequency: 15000, speed: 2 },
+      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
+      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
     },
   ];
 
@@ -738,8 +791,8 @@ const SDMANAGER = () => {
             <div
                 style={{
                   position: "absolute",
-                  top: 50,
-                  right: 20,
+                  top: 10, // Platzierung nach oben
+                  left: 10, // Platzierung nach links
                   fontSize: "16px",
                   padding: "5px 10px",
                   backgroundColor: "rgba(0, 0, 0, 0.5)",
