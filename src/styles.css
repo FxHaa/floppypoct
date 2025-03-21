@@ -35,6 +35,8 @@ body {
   width: 70px;
   height: 70px;
   user-select: none;
+  border: 2px solid blue;
+  zIndex: 10;
 }
 
  .bird-invincible {
@@ -45,8 +47,8 @@ body {
 
 .fish {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
 }
 
 .turtle {

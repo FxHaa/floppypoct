@@ -25,9 +25,11 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: center; /* Zentriere horizontal */
+  align-items: center; /* Zentriere vertikal */
+  min-height: 100vh; /* Höhe des Viewports */
+  background: #242424; /* Hintergrundfarbe */
+  overflow: hidden; /* Kein Scrollen möglich */
 }
 
 h1 {

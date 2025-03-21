@@ -175,10 +175,10 @@ const SDMANAGER = () => {
 
   const checkCollision = () => {
     if (isInvincible) return; // Skip collision check if invincible
-    const birdTop = birdPosition.y + 10; // Adjusted hitbox
-    const birdBottom = birdPosition.y + 40; // Adjusted hitbox
-    const birdLeft = birdPosition.x + 10; // Adjusted hitbox
-    const birdRight = birdPosition.x + 40; // Adjusted hitbox
+    const birdTop = birdPosition.y; // Adjusted hitbox
+    const birdBottom = birdPosition.y + 70; // Adjusted hitbox
+    const birdLeft = birdPosition.x; // Adjusted hitbox
+    const birdRight = birdPosition.x + 70; // Adjusted hitbox
 
     // Check for collision with bonus
     bonuses.forEach((bonus) => {
@@ -288,7 +288,7 @@ const SDMANAGER = () => {
               birdBottom > fishTop &&
               birdTop < fishBottom) || // Fish collision
           birdTop < 0 || // Top boundary collision
-          birdBottom > 800; // Bottom boundary collision
+          birdBottom > 600; // Bottom boundary collision
 
       if (isColliding) {
         handleCollision();
