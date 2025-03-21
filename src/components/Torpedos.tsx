@@ -1,10 +1,11 @@
 import React from "react";
+import turtle from "/turtle2.png";
 
 const Torpedos = ({ torpedoPosition }) => {
   return (
       <img
           src={
-            "../../turtle2.png"
+            turtle
           }
           alt="turtle"
           className="turtle border-box"

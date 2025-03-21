@@ -1,10 +1,11 @@
 // Bird.js
 import React from "react";
+import treasure from "/treasure.png";
 
 const Bonus = ({ bonusPosition }) => {
   return (
       <img
-          src={"../../treasure.png"}
+          src={treasure}
           alt="bird"
           className="bird border-box"
           style={{

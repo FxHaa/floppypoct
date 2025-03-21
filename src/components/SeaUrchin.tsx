@@ -1,9 +1,10 @@
 import React from "react";
+import seaurchin from "/seaurchin.png";
 
 const SeaUrchin = ({ seaUrchinPosition }) => {
   return (
       <img
-          src={"../../seaurchin.png"}
+          src={seaurchin}
           alt="seaurchin"
           className="bird border-box"
           style={{
