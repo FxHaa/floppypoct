@@ -782,8 +782,9 @@ const SDMANAGER = () => {
                     maxWidth: "800px",
                     textAlign: "center",
                     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.5)",
-                    fontSize: "14px", // Schriftgröße reduziert
+                    fontSize: "13px", // Schriftgröße reduziert
                     lineHeight: "1.4", // Absatzzeilenhöhe anpassen
+                    color: 'black',
                     zIndex: 1200,
                   }}
               >
@@ -797,6 +798,7 @@ const SDMANAGER = () => {
                   Hilf´ dem kleinen Octo, die Gefahren zu überwinden. Die Reise beginnt jetzt!
                   Wer sammelt die meisten Punkte?
                 </p>
+                <p>Den kleinen Octopus hälst mit Klick auf die linke Maustaste über dem Meeresboden. Nach links und recht bewegst du die mit den Tasen [A] und [D] </p>
                 <button
                     onClick={startGame} // Verbindet das Schließen des Modals und Start des Spiels
                     style={{
@@ -809,6 +811,7 @@ const SDMANAGER = () => {
                       color: "white",
                       border: "none",
                       cursor: "pointer",
+                      color: 'black',
                       transition: "0.3s",
                     }}
                     onMouseOver={(e) =>
