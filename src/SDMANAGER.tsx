@@ -22,7 +22,7 @@ const SDMANAGER = () => {
   const INIT_JELLYFISHSPEED = 2;
   const INIT_FISHSPEED = 4;
   const JELLYFISH_TRACK = 0.002
-  const NUM_BONUSES = 3;
+  const NUM_BONUSES = 4;
   const BONUS_FREQUENCY = 30000; //30000
 
   const [level, setLevel] = useState(1); // Start bei Level 1
@@ -54,11 +54,14 @@ const SDMANAGER = () => {
   const [isInvincible, setIsInvincible] = useState(false);
   const [isVisible, setIsVisible] = useState(true);  // For flashing effect
 
+  const [playerName, setPlayerName] = useState(""); // Spielernamen speichern
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true); // Zustand für Kapitelstart-Schaltfläche
+
   const gravity = 0.5; // Gravity acceleration
   const jumpStrength = -10; // Initial velocity on jump
   const terminalVelocity = 10; // Maximum downward velocity
-  const fishWidth = 60;
-  const fishGap = 60; // Space between top and bottom fishes
+  const fishWidth = 30;
+  const fishGap = 30; // Space between top and bottom fishes
   const torpedoWidth = 60; // Torpedo size
   const torpedoHeight = 60;
   const whaleSharkWidth = 200; // whaleshark size
@@ -156,6 +159,12 @@ const SDMANAGER = () => {
     },
   ];
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setPlayerName(name);
+    setIsButtonDisabled(name.trim() === ""); // Leersätze gelten als ungültig
+  };
+
   const jump = () => {
     if (!gameOver && gameStarted) {
       setVelocity(jumpStrength); // Apply upward velocity
@@ -189,6 +198,12 @@ const SDMANAGER = () => {
       passedAnchorsRef.current.clear();
     }
   };
+
+  useEffect(() => {
+    if (gameOver) {
+      sendScore(playerName, score); // Punktzahl und Spielername senden
+    }
+  }, [gameOver]); // Immer, wenn `gameOver` den Status "true" erreicht
 
   useEffect(() => {
     let levelTimer: number;
@@ -234,6 +249,50 @@ const SDMANAGER = () => {
       }
     };
   }, [isInvincible]);
+
+  async function sendScore(playerName: string, score: number) {
+    const url = "http://highscore.byte-island.com/highScore";
+    const payload = {
+      gameName: "floppypoct",
+      playerName: playerName,
+      score: score,
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      "API-KEY": "2288e3fb-22fe-44fa-b78d-339117fa294e",
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        console.error("Fehler beim Senden der Punktzahl:", response.statusText);
+        throw new Error("Request failed with status: " + response.status);
+      }
+
+      // Einen der Header überprüfen, um den Response-Typ festzustellen
+      const contentType = response.headers.get("content-type");
+
+      let result;
+      if (contentType && contentType.includes("application/json")) {
+        // Wenn die Antwort JSON ist, parse sie
+        result = await response.json();
+      } else {
+        // Andernfalls nehme an, dass sie Text ist
+        result = await response.text();
+      }
+
+      console.log("Server-Antwort:", result); // Protokollieren Sie die Antwort
+
+    } catch (error) {
+      console.error("Fehler beim Senden der Punktzahl:", error);
+    }
+  }
 
   const checkCollision = () => {
     if (isInvincible) return; // Skip collision check if invincible
@@ -294,6 +353,17 @@ const SDMANAGER = () => {
             setTimeout(() => {
               setIsInvincible(false);
             }, bonusDuration);
+        } else if (randomInt == 3) {
+          setLives((prev) => Math.min(prev + 1, 5));
+          // Zeige visuelles Feedback
+          const heartId = Math.random().toString(36).substring(2, 15); // Eindeutige ID
+          const heartEffect = { id: heartId, x: birdPosition.x, y: birdPosition.y }; // Position wo der Bonus gesammelt wurde
+          setBonuses((prev) => [...prev, heartEffect]);
+
+          // Entferne das Feedback nach einer kurzen Zeit
+          setTimeout(() => {
+            setBonuses((prev) => prev.filter((bonus) => bonus.id !== heartId));
+          }, 1000);
         }
       }
     });
@@ -755,7 +825,11 @@ const SDMANAGER = () => {
     };
   }, [gameStarted, gameOver]);
   return (
-      <div className={`App ${gameOver ? "game-over" : ""}`} onClick={jump}>
+      <div className={`App ${gameOver ? "game-over" : ""}`} onClick={(e) => {
+        if (!showStoryModal) {
+          jump();
+        }
+      }}>
         <Bird birdPosition={birdPosition} isVisible={isVisible}/>
         {showStoryModal && (
             <div
@@ -782,44 +856,80 @@ const SDMANAGER = () => {
                     maxWidth: "800px",
                     textAlign: "center",
                     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.5)",
-                    fontSize: "13px", // Schriftgröße reduziert
+                    fontSize: "12px", // Schriftgröße reduziert
                     lineHeight: "1.4", // Absatzzeilenhöhe anpassen
                     color: 'black',
                     zIndex: 1200,
                   }}
               >
-                <h2 style={{ marginBottom: "20px", fontWeight: "bold" }}>
+                <h2 style={{marginBottom: "20px", fontWeight: "bold"}}>
                   Octos Tiefsee-Abendteuer oder bevor der kleine blaue (P)Octopus zu IMP kam
                 </h2>
                 <p>
-                  Tief unten im Ozean lebt Octo, ein kleiner blauer Oktopus, der sehr neugierig und abenteuerlustig ist. Eines Tages wird es ihm bei seiner Oktopus-Familie zu langweilig und so macht er sich auf den Weg die Unterwasserwelt zu erkunden 🌊.
-                  Doch die Reise wird schnell riskant! Gefährliche Fische 🐡, giftige Quallen 🪼und anderes Meeresgetier stellen sich ihm in den Weg, aber es gibt auch menschengemachte Tücken zu umgehen. Er muss sich flink bewegen und Hindernissen ausweichen, um voranzukommen.
-                  Auf seinem Abenteuer kann Octo spezielle Schätze sammeln, die ihm zusätzlich Kräfte verleihen – wie unsichtbar werden, ein zusätzliches Leben gewinnen oder an Feinden vorbeischleichen.
+                  Tief unten im Ozean lebt Octo, ein kleiner blauer Oktopus, der sehr neugierig und
+                  abenteuerlustig ist. Eines Tages wird es ihm bei seiner Oktopus-Familie zu
+                  langweilig und so macht er sich auf den Weg die Unterwasserwelt zu erkunden 🌊.
+                  Doch die Reise wird schnell riskant! Gefährliche Fische 🐡, giftige Quallen 🪼und
+                  anderes Meeresgetier stellen sich ihm in den Weg, aber es gibt auch
+                  menschengemachte Tücken zu umgehen. Er muss sich flink bewegen und Hindernissen
+                  ausweichen, um voranzukommen.
+                  Auf seinem Abenteuer kann Octo spezielle Schätze sammeln, die ihm zusätzlich
+                  Kräfte verleihen – wie unsichtbar werden, ein zusätzliches Leben gewinnen oder an
+                  Feinden vorbeischleichen.
                   Hilf´ dem kleinen Octo, die Gefahren zu überwinden. Die Reise beginnt jetzt!
                   Wer sammelt die meisten Punkte?
                 </p>
-                <p>Den kleinen Octopus hälst mit Klick auf die linke Maustaste über dem Meeresboden. Nach links und recht bewegst du die mit den Tasen [A] und [D] </p>
-                <button
-                    onClick={startGame} // Verbindet das Schließen des Modals und Start des Spiels
+                <p>Den kleinen Octopus hälst mit Klick auf die linke Maustaste über dem Meeresboden.
+                  Nach links und recht bewegst du die mit den Tasen [A] und [D] </p>
+                {/* Namensfeld */}
+                <label htmlFor="player-name"
+                       style={{display: "block", marginBottom: "10px", fontWeight: "bold"}}>Gib
+                  deinen Namen ein:</label>
+                <input
+                    id="player-name"
+                    type="text"
+                    value={playerName}
+                    onChange={handleNameChange} // Bereits existierende Funktion
+                    placeholder="Dein Name..."
                     style={{
-                      marginTop: "20px",
+                      padding: "8px 12px",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      fontSize: "14px",
+                      width: "80%",
+                      marginBottom: "20px",
+                    }}
+                />
+
+                {/* Button */}
+                <button
+                    onClick={() => {
+                      setShowStoryModal(false); // Schließt das Story-Modal
+                      setGameStarted(true);     // Setzt das Spiel in den aktiven Status
+                      jump();                   // Initiiert den ersten Sprung
+                    }}
+                    disabled={isButtonDisabled} // Aktiviert erst, wenn Name eingegeben wurde
+                    style={{
                       padding: "10px 20px",
                       fontSize: "16px",
                       fontWeight: "bold",
                       borderRadius: "5px",
-                      backgroundColor: "#1E90FF",
-                      color: "white",
+                      backgroundColor: isButtonDisabled ? "#ccc" : "#1E90FF", // Deaktivierte Farbe
+                      color: isButtonDisabled ? "#666" : "white",
                       border: "none",
-                      cursor: "pointer",
-                      color: 'black',
+                      cursor: isButtonDisabled ? "not-allowed" : "pointer",
                       transition: "0.3s",
                     }}
-                    onMouseOver={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#4682B4")
-                    }
-                    onMouseOut={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#1E90FF")
-                    }
+                    onMouseOver={(e) => {
+                      if (!isButtonDisabled) {
+                        e.currentTarget.style.backgroundColor = "#4682B4";
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (!isButtonDisabled) {
+                        e.currentTarget.style.backgroundColor = "#1E90FF";
+                      }
+                    }}
                 >
                   Ich bin bereit!
                 </button>
@@ -833,13 +943,13 @@ const SDMANAGER = () => {
             />
         ))}
         {whaleSharks.map((whaleShark) => (
-            <WhaleShark key={whaleShark.id} whaelSharkPosition={whaleShark} />
+            <WhaleShark key={whaleShark.id} whaelSharkPosition={whaleShark}/>
         ))}
         {jellyFishes.map((jellyFish) => (
-            <Jellyfish key={jellyFish.id} jellyFishPosition={jellyFish} />
+            <Jellyfish key={jellyFish.id} jellyFishPosition={jellyFish}/>
         ))}
         {torpedoes.map((torpedo) => (
-            <Torpedos key={torpedo.id} torpedoPosition={torpedo} />
+            <Torpedos key={torpedo.id} torpedoPosition={torpedo}/>
         ))}
         {seaUrchins.map((seaUrchin) => (
             <SeaUrchin
@@ -870,6 +980,23 @@ const SDMANAGER = () => {
         ))}
         {bonuses.map((bonus) => (
             <Bonus key={bonus.id} bonusPosition={bonus} />
+        ))}
+        {bonuses.map((bonus) => (
+            bonus.type === "heart" && (
+                <div
+                    key={bonus.id}
+                    style={{
+                      position: "absolute",
+                      top: `${bonus.y}px`,
+                      left: `${bonus.x}px`,
+                      fontSize: "20px",
+                      color: "red",
+                      animation: "fadeOut 1s ease-in-out", // Fügen Sie eine Animation hinzu
+                    }}
+                >
+                  ❤️ +1
+                </div>
+            )
         ))}
         {/* Level-Anzeige */}
         {!gameOver && (
@@ -989,58 +1116,6 @@ const SDMANAGER = () => {
             </div>
         )}
         {/* Start Screen Rendering */}
-        {!gameOver && showStartScreen && !showStoryModal && !gameStarted && (
-            <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  background: "linear-gradient(120deg, #87CEFA, #4682B4, #1E90FF)", // Animated background
-                  backgroundSize: "300% 300%",
-                  animation: "gradientMoveBlue 8s ease infinite",
-                  zIndex: 2000,
-                }}
-                onClick={() => {
-                  setShowStartScreen(false); // Hide the start screen
-                  setGameStarted(true); // Start the game
-                  console.log("CLICKED")
-                }}
-            >
-              <div
-                  style={{
-                    textAlign: "center",
-                    padding: "20px",
-                    borderRadius: "15px",
-                    backgroundColor: "rgba(0, 0, 64, 0.7)",
-                    boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)",
-                    backdropFilter: "blur(10px)",
-                    color: "white",
-                  }}
-              >
-                <div
-                    style={{
-                      animation: "pulseBlue 1.5s infinite",
-                    }}
-                >
-                  <p style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "20px" }}>
-                    Click anywhere to start!
-                  </p>
-                </div>
-                <p style={{ fontSize: "18px", color: "rgba(240, 248, 255, 0.85)" }}>
-                  Control:
-                  <br />
-                  <b>[A]</b> and <b>[D]</b>, to move horizontally
-                  <br />
-                  <b>Left Mouse</b>, to jump
-                </p>
-              </div>
-            </div>
-        )}
         {gameOver && (
             <div
                 style={{
