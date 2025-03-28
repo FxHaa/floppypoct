@@ -1,10 +1,10 @@
 import {Playground} from "./Playground";
-import SDMANAGER from "./SDMANAGER";
+import Flappypoct from "./Flappypoct";
 
 export const Game = () => {
   return (
       <Playground>
-        <SDMANAGER />
+        <Flappypoct />
       </Playground>
   );
 }

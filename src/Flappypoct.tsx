@@ -9,15 +9,11 @@ import Jellyfish from "./components/Jellyfish";
 import Heart from "./components/Heart";
 import SeaUrchin from "./components/SeaUrchin";
 import Anchor from "./components/Anchor";
+import levelConfigs from './config/levelConfigs';
 
-const SDMANAGER = () => {
+
+const Flappypoct = () => {
   const [showStoryModal, setShowStoryModal] = useState(true); // Modal sichtbar beim Start
-  const [showStartScreen, setShowStartScreen] = useState(true); // New state for start screen
-
-  const startGame = () => {
-    setShowStoryModal(false); // Hide the modal
-    setShowStartScreen(true); // Show the start screen
-  };
 
   const INIT_JELLYFISHSPEED = 2;
   const INIT_FISHSPEED = 4;
@@ -85,79 +81,6 @@ const SDMANAGER = () => {
   const bonusWidth = 60; // Größe des Bonus
   const bonusHeight = 60;
   const bonusDuration = 15000; // Effekt-Dauer (20 Sekunden)
-
-  const levelConfigs = [
-    {
-      level: 1,
-      mobTypes: ["Fish"],
-      jellyfishConfig: { frequency: 500, speed: 2 },
-      seaUrchinConfig: { frequency: 500, speed: 5, verticalRange: 2 }, // Sea Urchin put the im Level
-      anchorConfig: { frequency: 500, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 2,
-      mobTypes: ["Fish", "Torpedo"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 3,
-      mobTypes: ["Fish", "Torpedo", "WhaleShark"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 4,
-      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 5,
-      mobTypes: ["Anchor"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 2000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 6,
-      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 7,
-      mobTypes: ["Jellyfish"],
-      jellyfishConfig: { frequency: 2000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 8,
-      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 9,
-      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-    {
-      level: 10,
-      mobTypes: ["Fish", "Jellyfish", "Torpedo", "WhaleShark", "Jellyfish", "SeaUrchin"],
-      jellyfishConfig: { frequency: 15000, speed: 2 },
-      seaUrchinConfig: { frequency: 15000, speed: 5, verticalRange: 2 }, // Sea Urchin im Level
-      anchorConfig: { frequency: 10000, acceleration: 0.3, initialSpeed: 2 }, //
-    },
-  ];
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
@@ -354,11 +277,11 @@ const SDMANAGER = () => {
               setIsInvincible(false);
             }, bonusDuration);
         } else if (randomInt == 3) {
-          setLives((prev) => Math.min(prev + 1, 5));
+          setLives((prev) => prev + 1);
           // Zeige visuelles Feedback
           const heartId = Math.random().toString(36).substring(2, 15); // Eindeutige ID
-          const heartEffect = { id: heartId, x: birdPosition.x, y: birdPosition.y }; // Position wo der Bonus gesammelt wurde
-          setBonuses((prev) => [...prev, heartEffect]);
+          //const heartEffect = { id: heartId, x: birdPosition.x, y: birdPosition.y }; // Position wo der Bonus gesammelt wurde
+          //setBonuses((prev) => [...prev, heartEffect]);
 
           // Entferne das Feedback nach einer kurzen Zeit
           setTimeout(() => {
@@ -1182,4 +1105,4 @@ const SDMANAGER = () => {
   );
 };
 
-export default SDMANAGER;
+export default Flappypoct;
