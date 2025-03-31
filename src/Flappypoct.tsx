@@ -779,10 +779,15 @@ const Flappypoct = () => {
                     maxWidth: "800px",
                     textAlign: "center",
                     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.5)",
-                    fontSize: "12px", // Schriftgröße reduziert
+                    fontSize: "11px", // Schriftgröße reduziert
                     lineHeight: "1.4", // Absatzzeilenhöhe anpassen
                     color: 'black',
                     zIndex: 1200,
+                    backgroundImage: `url(public/poctopus.png)`,
+                    backgroundSize: "100px", // Reduziert die Größe des Bildes
+                    backgroundRepeat: "no-repeat", // Keine Wiederholungen des Bildes
+                    backgroundPosition: "left bottom", // Bild in die linke
+
                   }}
               >
                 <h2 style={{marginBottom: "20px", fontWeight: "bold"}}>
@@ -792,18 +797,27 @@ const Flappypoct = () => {
                   Tief unten im Ozean lebt Octo, ein kleiner blauer Oktopus, der sehr neugierig und
                   abenteuerlustig ist. Eines Tages wird es ihm bei seiner Oktopus-Familie zu
                   langweilig und so macht er sich auf den Weg die Unterwasserwelt zu erkunden 🌊.
+                </p>
+                <p>
                   Doch die Reise wird schnell riskant! Gefährliche Fische 🐡, giftige Quallen 🪼und
                   anderes Meeresgetier stellen sich ihm in den Weg, aber es gibt auch
                   menschengemachte Tücken zu umgehen. Er muss sich flink bewegen und Hindernissen
                   ausweichen, um voranzukommen.
+                </p>
+                <p>
                   Auf seinem Abenteuer kann Octo spezielle Schätze sammeln, die ihm zusätzlich
                   Kräfte verleihen – wie unsichtbar werden, ein zusätzliches Leben gewinnen oder an
-                  Feinden vorbeischleichen.
-                  Hilf´ dem kleinen Octo, die Gefahren zu überwinden. Die Reise beginnt jetzt!
-                  Wer sammelt die meisten Punkte?
+                  Feinden vorbeischleichen. Hilf´ dem kleinen Octo, die Gefahren zu überwinden.
                 </p>
-                <p>Den kleinen Octopus hälst mit Klick auf die linke Maustaste über dem Meeresboden.
-                  Nach links und recht bewegst du die mit den Tasen [A] und [D] </p>
+                <p>Die Reise beginnt jetzt! Wer sammelt die meisten Punkte?</p>
+                <p>
+                  Den kleinen Octopus hältst du mit Klick auf die <span style={{fontWeight: "bold", color: "blue"}}>linke Maustaste</span> über
+                  dem
+                  Meeresboden.
+                  Nach links und rechts bewegst du dich mit den Tasten
+                  <span style={{fontWeight: "bold", color: "blue"}}> [A]</span> und
+                  <span style={{fontWeight: "bold", color: "blue"}}> [D]</span>.
+                </p>
                 {/* Namensfeld */}
                 <label htmlFor="player-name"
                        style={{display: "block", marginBottom: "10px", fontWeight: "bold"}}>Gib
