@@ -175,9 +175,9 @@ const Flappypoct = () => {
   }, [isInvincible]);
 
   async function sendScore(playerName: string, score: number) {
-    const url = "http://highscore.byte-island.com/highScore";
+    const url = "https://highscore.byte-island.com/imp/api/highScore";
     const payload = {
-      gameName: "floppypoct",
+      gameName: "flappypoct",
       playerName: playerName,
       score: score,
     };
