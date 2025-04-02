@@ -9,6 +9,7 @@ import Jellyfish from "./components/Jellyfish";
 import Heart from "./components/Heart";
 import SeaUrchin from "./components/SeaUrchin";
 import Anchor from "./components/Anchor";
+import poctopus from "/poctopus.png";
 import levelConfigs from './config/levelConfigs';
 
 
@@ -183,7 +184,7 @@ const Flappypoct = () => {
 
     const headers = {
       "Content-Type": "application/json",
-      "API-KEY": "2288e3fb-22fe-44fa-b78d-339117fa294e",
+      "API-KEY": "62371503-e491-439d-b4f3-48e30576b7b5",
     };
 
     try {
@@ -748,7 +749,7 @@ const Flappypoct = () => {
     };
   }, [gameStarted, gameOver]);
   return (
-      <div className={`App ${gameOver ? "game-over" : ""}`} onClick={(e) => {
+      <div className={`App ${gameOver ? "game-over" : ""}`} onClick={() => {
         if (!showStoryModal) {
           jump();
         }
@@ -783,7 +784,7 @@ const Flappypoct = () => {
                     lineHeight: "1.4", // Absatzzeilenhöhe anpassen
                     color: 'black',
                     zIndex: 1200,
-                    backgroundImage: `url(public/poctopus.png)`,
+                    backgroundImage: `url(${poctopus})`,
                     backgroundSize: "100px", // Reduziert die Größe des Bildes
                     backgroundRepeat: "no-repeat", // Keine Wiederholungen des Bildes
                     backgroundPosition: "left bottom", // Bild in die linke
